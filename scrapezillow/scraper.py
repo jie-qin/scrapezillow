@@ -22,7 +22,7 @@ def _check_for_null_result(result):
 
 
 def _get_sale_info(soup):
-    sale_info = {"price": None, "status": None, "zestimate": None}
+    sale_info = {"price": None, "status": None, "zestimate": None, "rent_zestimate": None}
     value_wrapper = soup.find("div", id=constants.HOME_VALUE)
     summary_rows = value_wrapper.find_all(class_=re.compile("home-summary-row"))
     for row in summary_rows:
@@ -36,6 +36,12 @@ def _get_sale_info(soup):
             sale_info["status"] = status[0]
         elif re.search("\$?[\d,]+", row.text):
             sale_info["price"] = re.findall(r"\$?([\d,]+)", row.text)[0]
+    zestimates_values = soup.findAll("div",{"class":"zest-value"})
+    zestimates_titles = soup.findAll("div",{"class":"zest-title"})
+    for i,zest in enumerate(zestimates_titles): # loop through titles to make sure we have the right div for RENT zestimate
+        value = zest.findAll(text=True)
+        if 'rent' in str(value):
+            sale_info["rent_zestimate"] = re.findall(r"\$?([\d,]+)", zestimates_values[i](text=True)[0])[0]
     return sale_info
 
 
