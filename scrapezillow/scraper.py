@@ -51,11 +51,12 @@ def _get_property_summary(soup):
             results[property_] = re.findall(regex, prop_summary)[0]
         except IndexError:
             results[property_] = None
-
+    results = {}
     prop_summary = soup.find("div", class_=constants.PROP_SUMMARY_CLASS)
     _check_for_null_result(prop_summary)
+    for h1 in prop_summary.find_all('h1'):
+        results['address'] = h1.get_text()
     prop_summary = prop_summary.text
-    results = {}
     parse_property(r"([\d\.]+) beds?", "bedrooms")
     parse_property(r"([\d\.]+) baths?", "bathrooms")
     parse_property(r"([\d,\.]+) sqft", "sqft")
@@ -72,12 +73,17 @@ def _get_description(soup):
 
 
 def _get_photos(soup):
-    images = soup.select("ol.photos img")
+    images = soup.find_all("img", class_=constants.IMAGE)
     if not images:
         return []
+    photos = []
+    for i in images:
+        if i.has_attr("href"):
+            photos.append(i["href"])
+        elif i.has_attr("src"):
+            photos.append(i["src"])
+    return photos
 
-    photos = [i.get("href", i.get("src", None)) for i in images]
-    return filter(None, photos)
 
 def _get_fact_list(soup):
     groups = soup.find_all("ul", constants.FACT_GROUPING)
@@ -125,7 +131,7 @@ def get_raw_html(url, timeout):
 
 def validate_scraper_input(url, zpid):
     if url and zpid:
-        raise ValueError("You cannot specify both a url and a zpid. Choode one or the other")
+        raise ValueError("You cannot specify both a url and a zpid. Choose one or the other")
     elif not url and not zpid:
         raise ValueError("You must specify either a zpid or a url of the home to scrape")
     if url and "homes" not in url:
