@@ -86,10 +86,12 @@ def _get_photos(soup):
 
 
 def _get_fact_list(soup):
-    groups = soup.find_all("ul", constants.FACT_GROUPING)
+    groups = soup.find_all("div", constants.FACT_GROUPING)
     facts = []
     for group in groups:
-        facts.extend(group.find_all(class_=constants.INDIVIDUAL_FACT))
+        lists = group.find_all("ul", class_=constants.INDIVIDUAL_FACT)
+        for list in lists:
+            facts.extend(list.find_all("li"))
     return facts
 
 
@@ -219,8 +221,8 @@ def scrape_url(url, zpid, request_timeout):
     soup = BeautifulSoup(get_raw_html(url, request_timeout), 'html.parser')
     results = _get_property_summary(soup)
     facts = _parse_facts(_get_fact_list(soup))
-    results.update(**facts)
-    results.update(**_get_sale_info(soup))
+    results["facts"] = facts
+    results["sales_info"] = _get_sale_info(soup)
     results["description"] = _get_description(soup)
     results["photos"] = _get_photos(soup)
     populate_price_and_tax_histories(soup, results, request_timeout)

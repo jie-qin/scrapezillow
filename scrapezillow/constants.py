@@ -1,5 +1,5 @@
 DESCRIPTION = "notranslate"
-FACT_GROUPING = "disc-bullet"
+FACT_GROUPING = "fact-group-container"
 HOME_TYPES = (
     "Apartment",
     "Condo",
@@ -10,7 +10,7 @@ HOME_TYPES = (
     "Townhouse"
 )
 HOME_VALUE = "home-value-wrapper"
-INDIVIDUAL_FACT = "fact-bullet"
+INDIVIDUAL_FACT = "zsg-list_square"
 IMAGE = "hip-photo"
 PROP_SUMMARY_CLASS = "hdp-content-wrapper zsg-content-section"
 ZILLOW_HOMES_URL = "http://zillow.com/homes/"
