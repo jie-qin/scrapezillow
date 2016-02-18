@@ -17,9 +17,10 @@ def test_scrape_url():
     response = scrape_url(None, zpid, 5)
     for k, v in zpid_1_expected.items():
         eq_(response[k], v)
-    if not response['price']:
-        eq_(response['status'], 'Off Market')
+    ok_(response['sales_info'])
+    if not response['sales_info']['price']:
+        eq_(response['sales_info']['status'], 'Off Market')
     else:
-        assert_greater(int(response['price'].replace(',', '')), 0)
+        assert_greater(int(response['sales_info']['price'].replace(',', '')), 0)
     ok_(response['description'])
     ok_(response['price_history'])
